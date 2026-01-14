@@ -46,6 +46,9 @@ function showQuestion(index) {
     `;
 
         optionsForm.appendChild(div);
+
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = !userAnswers[index];
     });
 }
 
@@ -53,7 +56,10 @@ function showQuestion(index) {
 optionsForm.addEventListener("change", (e) => {
     userAnswers[currentQuestion] = e.target.value;
     localStorage.setItem("answers", JSON.stringify(userAnswers));
+
+    nextBtn.disabled = false;
 });
+
 
 
 /* Boton de siguiente */
@@ -71,8 +77,7 @@ nextBtn.addEventListener("click", () => {
 prevBtn.addEventListener("click", () => {
     if (currentQuestion > 0) {
         currentQuestion--;
-        showQuestion(currentQuestion);
-        prevBtn.disabled = currentQuestion === 0;
+        showQuestion(currentQuestion)
     }
 });
 
