@@ -17,7 +17,8 @@ const questions = [
 ];
 
 let currentQuestion = 0;
-let userAnswers = [];
+let userAnswers = JSON.parse(localStorage.getItem("answers")) || [];
+
 
 const questionText = document.getElementById("questionText");
 const optionsForm = document.getElementById("optionsForm");
@@ -48,26 +49,60 @@ function showQuestion(index) {
     });
 }
 
-/* Guarda respuesta */
+/* Guarda respuesta en localStorage */
 optionsForm.addEventListener("change", (e) => {
     userAnswers[currentQuestion] = e.target.value;
+    localStorage.setItem("answers", JSON.stringify(userAnswers));
 });
+
 
 /* Boton de siguiente */
 nextBtn.addEventListener("click", () => {
     if (currentQuestion < questions.length - 1) {
         currentQuestion++;
         showQuestion(currentQuestion);
+    } else {
+        showResults();
     }
 });
+
 
 /* Boton de anterior */
 prevBtn.addEventListener("click", () => {
     if (currentQuestion > 0) {
         currentQuestion--;
         showQuestion(currentQuestion);
+        prevBtn.disabled = currentQuestion === 0;
     }
 });
 
 /* Cargar pregunta */
 showQuestion(currentQuestion);
+
+
+/* Funcion para dar el resultado de preguntas correctas e incorrectas */
+function showResults() {
+    let correct = 0;
+
+    questions.forEach((q, index) => {
+        if (userAnswers[index] === q.answer) {
+            correct++;
+        }
+    });
+
+    const incorrect = questions.length - correct;
+
+    document.querySelector(".container").innerHTML = `
+    <h2 class="text-center mb-4">Resultados</h2>
+
+    <div class="card">
+        <div class="card-body text-center">
+            <p><strong>Aciertos:</strong> ${correct}</p>
+            <p><strong>Errores:</strong> ${incorrect}</p>
+            <p><strong>Total de preguntas:</strong> ${questions.length}</p>
+        </div>
+    </div>
+`;
+
+    localStorage.removeItem("answers");
+}
